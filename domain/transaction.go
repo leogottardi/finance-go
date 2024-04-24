@@ -1,17 +1,19 @@
 package domain
 
+import "time"
+
 type Transaction struct {
-	AccountID int
-	Amount uint
-	Type string
-	Installments uint
+	ID        string
+	Amount    uint
+	Type      string
+	CreatedAt time.Time
 }
 
-func CreateTransaction(accountID int, amount uint, transactionType string, installments uint) Transaction {
+func CreateTransaction(id string, amount uint, transactionType string) Transaction {
 	return Transaction{
-		AccountID: accountID,
-		Amount: amount,
-		Type: transactionType,
-		Installments: installments,
+		ID:        id,
+		Amount:    amount,
+		Type:      transactionType,
+		CreatedAt: time.Now(),
 	}
 }

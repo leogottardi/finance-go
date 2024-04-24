@@ -7,10 +7,12 @@ import (
 
 
 func main() {
-	customer := domain.CreateCustomer(1, "John Doe")
-	account := domain.CreateAccount(1, customer.ID, 1000)
-	account.AddTransaction( 500, "credit", 1)
-	account.AddTransaction(500, "credit", 3)
+	customer := domain.CreateCustomer("1", "John Doe", "12345678900")
+	account := domain.CreateAccount("1", customer.ID, 1000, 5)
+	account.AddInvoice()
 
-	fmt.Println(account.GetBalance())
+	account.AddTransaction(10, "credit")
+	account.AddTransaction(1, "credit")
+
+	fmt.Println(account.CurrentInvoice().TotalCredit())
 }

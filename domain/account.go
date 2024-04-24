@@ -1,37 +1,55 @@
 package domain
 
+import (
+	"strconv"
+	"time"
+)
+
 type Account struct {
-	ID  int
-	CustomerID int
-	Limit uint
-	Transactions []Transaction
+	ID         string
+	CustomerID string
+	DueDay     uint
+	Limit      uint
+	Invoices  []Invoice
+	CreatedAt  time.Time
 }
 
-func CreateAccount(id int, customerID int, limit uint) Account {
+func CreateAccount(id string, customerID string, limit uint, dueDay uint) Account {
 	return Account{
-		ID: id,
+		ID:         id,
 		CustomerID: customerID,
-		Limit: limit,
+		Limit:      limit,
+		DueDay:     dueDay,
+		CreatedAt:  time.Now(),
 	}
 }
 
-func (account *Account) AddTransaction(amount uint, transactionType string, installments uint) {
-	balance := account.GetBalance()
-	if balance < amount {
-		println("Transaction declined")
-		return
-	}
-	account.Transactions = append(account.Transactions, Transaction{account.ID, amount, transactionType, installments})
-}
-
-func (account *Account) GetBalance() uint {
-	var balance uint
-	for _, transaction := range account.Transactions {
-		if transaction.Type == "credit" {
-			balance += transaction.Amount
-		} else {
-			balance -= transaction.Amount
+func (account *Account) CurrentInvoice() *Invoice {
+		currentTime := time.Now().Format("200601")
+		termUint, _ := strconv.ParseUint(currentTime, 10, 64)
+	for _, invoice := range account.Invoices {
+		if invoice.Term == uint(termUint) {
+			return &invoice
 		}
 	}
-	return account.Limit - balance
+	panic("Invoice not found")
+}
+
+func (account *Account) AddInvoice() {
+	invoice := CreateInvoice("1", account.ID)
+	account.Invoices = append(account.Invoices, invoice)
+}
+
+func (account *Account) AddTransaction(amount uint, transactionType string) {
+	if ((transactionType == "credit") && (account.Limit - amount) < 0) {
+		panic("Limit exceeded")
+	}
+	if transactionType == "credit" {
+		account.Limit -= amount
+	} else {
+		account.Limit += amount
+	}
+	transaction := CreateTransaction("1", amount, transactionType)
+	invoice := account.CurrentInvoice()
+	invoice.AddTransaction(transaction)
 }

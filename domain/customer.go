@@ -1,14 +1,19 @@
 package domain
 
+import "time"
+
 type Customer struct {
-	ID   int
-	Name string
+	ID        string
+	Name      string
+	Document  string
+	CreatedAt time.Time
 }
 
-
-func CreateCustomer(id int, name string) Customer {
+func CreateCustomer(id string, name string, document string) Customer {
 	return Customer{
-		ID:   id,
-		Name: name,
+		ID:        id,
+		Name:      name,
+		Document:  document,
+		CreatedAt: time.Now(),
 	}
 }
