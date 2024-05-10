@@ -1,18 +1,15 @@
 package main
 
 import (
-	"finance-go/domain"
-	"fmt"
+	"finance-go/src/config"
+	"finance-go/src/router"
+	"log"
+	"net/http"
 )
 
-
 func main() {
-	customer := domain.CreateCustomer("1", "John Doe", "12345678900")
-	account := domain.CreateAccount("1", customer.ID, 1000, 5)
-	account.AddInvoice()
+	db := config.Config()
+	defer db.Close()
 
-	account.AddTransaction(10, "credit")
-	account.AddTransaction(1, "credit")
-
-	fmt.Println(account.CurrentInvoice().TotalCredit())
+	log.Fatal(http.ListenAndServe(":3000", router.Configure()))
 }
